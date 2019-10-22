@@ -12,6 +12,8 @@ Get your open issues into waybar.
 
 * Create a **Personal access token** with scope `repo` [here](https://github.com/settings/tokens).
 
+* As GitHub considers every PR as an issues, you will see the amount of your issues **and** PRs.
+
 ## Waybar
 
 Add a custom module to your waybar config eg.
