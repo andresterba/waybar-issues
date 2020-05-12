@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"encoding/json"
@@ -20,7 +20,7 @@ type ConfigurationEntry struct {
 	OpenIssues  string
 }
 
-func getConfigPath() string {
+func GetConfigPath() string {
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
@@ -28,7 +28,7 @@ func getConfigPath() string {
 	return usr.HomeDir + "/.waybar-issues"
 }
 
-func loadConfigFile(filename string, config *Configuration) error {
+func LoadConfigFile(filename string, config *Configuration) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return err

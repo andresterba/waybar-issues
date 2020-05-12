@@ -1,0 +1,16 @@
+{
+	"entries": [{
+        "typ": "gitlab",
+		"username": "test-user",
+		"token": "token1337",
+		"url": "https://gitlab.com",
+        "display_name": "GitLab"
+	}, {
+        "typ": "github",
+		"username": "gh-user",
+		"token": "token-1337",
+		"url": "",
+        "display_name": "GitHub"
+
+	}]
+}

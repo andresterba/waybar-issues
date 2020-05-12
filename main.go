@@ -6,6 +6,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/andresterba/waybar-issues/config"
+
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -15,9 +17,9 @@ type waybarResponse struct {
 }
 
 func main() {
-	configuration := Configuration{}
+	configuration := config.Configuration{}
 
-	err := loadConfigFile(getConfigPath(), &configuration)
+	err := config.LoadConfigFile(config.GetConfigPath(), &configuration)
 	if err != nil {
 		log.Fatal(err)
 	}
