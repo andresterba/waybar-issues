@@ -1,16 +1,10 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
 name: "CodeQL"
 
 on:
   push:
-    branches: [master, add-code-scanning]
+    branches: [master]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [master, add-code-scanning]
+    branches: [master]
   schedule:
     - cron: '0 9 * * 4'
 
@@ -22,8 +16,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Override automatic language detection by changing the below list
-        # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
         language: ['go']
         # Learn more...
         # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
