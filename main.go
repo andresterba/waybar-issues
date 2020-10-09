@@ -36,7 +36,17 @@ func main() {
 				log.Fatal(err)
 			}
 
+			openGitLabMergeRequests, err := gitlabGetAssignedMergeRequests(
+				configEntry.URL,
+				configEntry.Token,
+				configEntry.Username,
+			)
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			configEntry.OpenIssues = openGitLabIssues
+			configEntry.OpenPullOrMergeRequests = openGitLabMergeRequests
 
 		case "github":
 			openGitHubIssues, err := githubGetAssignedIssues(configEntry.Token)
@@ -55,7 +65,7 @@ func main() {
 	var responseText string
 
 	for _, configEntry := range configuration.Entries {
-		responseText += configEntry.DisplayName + ": " + configEntry.OpenIssues + " "
+		responseText += configEntry.DisplayName + " I:" + configEntry.OpenIssues + " MR:" + configEntry.OpenPullOrMergeRequests + " "
 	}
 
 	waybarResponse := waybarResponse{Text: responseText, Class: "issues"}
@@ -70,6 +80,30 @@ func main() {
 func gitlabGetAssignedIssues(gitlabURL string, gitlabToken string, gitlabUsername string) (string, error) {
 	issuesURL := fmt.Sprintf(
 		"%s/api/v4/issues?state=opened&scope=assigned_to_me&assignee_username=%s",
+		gitlabURL,
+		gitlabUsername,
+	)
+
+	request := gorequest.New()
+	_, body, errs := request.Get(issuesURL).
+		AppendHeader("Private-Token", gitlabToken).
+		End()
+	if errs != nil {
+		return "", fmt.Errorf("request to %s failed", issuesURL)
+	}
+
+	var issues []interface{}
+	if err := json.Unmarshal([]byte(body), &issues); err != nil {
+		return "", err
+	}
+	numberOfIssues := len(issues)
+
+	return strconv.Itoa(numberOfIssues), nil
+}
+
+func gitlabGetAssignedMergeRequests(gitlabURL string, gitlabToken string, gitlabUsername string) (string, error) {
+	issuesURL := fmt.Sprintf(
+		"%s/api/v4/merge_requests?state=opened&scope=assigned_to_me&assignee_username=%s",
 		gitlabURL,
 		gitlabUsername,
 	)
