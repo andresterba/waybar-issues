@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strconv"
+	"os"
 
 	"github.com/andresterba/waybar-issues/config"
-
-	"github.com/parnurzeal/gorequest"
 )
 
 type waybarResponse struct {
@@ -16,46 +14,52 @@ type waybarResponse struct {
 	Class string `json:"class"`
 }
 
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+}
+
 func main() {
 	configuration := config.Configuration{}
 
 	err := config.LoadConfigFile(config.GetConfigPath(), &configuration)
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkError(err)
+
+	var gitLabInstances []*gitLabStats
+	var gitHubInstances []*gitHubStats
 
 	for _, configEntry := range configuration.Entries {
 		switch configEntry.Typ {
 		case "gitlab":
-			openGitLabIssues, err := gitlabGetAssignedIssues(
-				configEntry.URL,
-				configEntry.Token,
-				configEntry.Username,
-			)
-			if err != nil {
-				log.Fatal(err)
-			}
 
-			configEntry.OpenIssues = openGitLabIssues
+			gitLabStatus := newGitLabStats(configEntry.Username, configEntry.Token, configEntry.URL, configEntry.DisplayName)
+			err := gitLabStatus.process()
+			checkError(err)
+
+			gitLabInstances = append(gitLabInstances, gitLabStatus)
 
 		case "github":
-			openGitHubIssues, err := githubGetAssignedIssues(configEntry.Token)
-			if err != nil {
-				log.Fatal(err)
-			}
+			gitHubStatus := newGitHubStats(configEntry.Username, configEntry.Token, configEntry.DisplayName)
+			err := gitHubStatus.process()
+			checkError(err)
 
-			configEntry.OpenIssues = openGitHubIssues
+			gitHubInstances = append(gitHubInstances, gitHubStatus)
 
 		default:
 			log.Fatal(fmt.Errorf("%s is not supported", configEntry.Typ))
-
 		}
 	}
 
 	var responseText string
 
-	for _, configEntry := range configuration.Entries {
-		responseText += configEntry.DisplayName + ": " + configEntry.OpenIssues + " "
+	for _, gitLabInstance := range gitLabInstances {
+		responseText += gitLabInstance.getFormatedOutput()
+	}
+
+	for _, gitHubInstance := range gitHubInstances {
+		responseText += gitHubInstance.getFormatedOutput()
 	}
 
 	waybarResponse := waybarResponse{Text: responseText, Class: "issues"}
@@ -65,48 +69,4 @@ func main() {
 	}
 
 	fmt.Println(string(waybarResponseJSON))
-}
-
-func gitlabGetAssignedIssues(gitlabURL string, gitlabToken string, gitlabUsername string) (string, error) {
-	issuesURL := fmt.Sprintf(
-		"%s/api/v4/issues?state=opened&scope=assigned_to_me&assignee_username=%s",
-		gitlabURL,
-		gitlabUsername,
-	)
-
-	request := gorequest.New()
-	_, body, errs := request.Get(issuesURL).
-		AppendHeader("Private-Token", gitlabToken).
-		End()
-	if errs != nil {
-		return "", fmt.Errorf("request to %s failed", issuesURL)
-	}
-
-	var issues []interface{}
-	if err := json.Unmarshal([]byte(body), &issues); err != nil {
-		return "", err
-	}
-	numberOfIssues := len(issues)
-
-	return strconv.Itoa(numberOfIssues), nil
-}
-
-func githubGetAssignedIssues(githubToken string) (string, error) {
-	issuesURL := "https://api.github.com/issues"
-
-	request := gorequest.New()
-	_, body, errs := request.Get(issuesURL).
-		AppendHeader("Authorization", githubToken).
-		End()
-	if errs != nil {
-		return "", fmt.Errorf("request to %s failed", issuesURL)
-	}
-
-	var issues []interface{}
-	if err := json.Unmarshal([]byte(body), &issues); err != nil {
-		return "", err
-	}
-	numberOfIssues := len(issues)
-
-	return strconv.Itoa(numberOfIssues), nil
 }

@@ -17,7 +17,6 @@ type ConfigurationEntry struct {
 	Token       string `json:"token"`
 	URL         string `json:"url"`
 	DisplayName string `json:"display_name"`
-	OpenIssues  string
 }
 
 func GetConfigPath() string {
