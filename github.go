@@ -11,10 +11,10 @@ const issueURL = "https://api.github.com/issues"
 const pullRequestURL = "https://api.github.com/pulls"
 
 type gitHubStats struct {
-	authToken     string
-	authUsername  string
-	CountOfIssues int
-	displayName   string
+	authToken    string
+	authUsername string
+	IssueCount   int
+	displayName  string
 }
 
 func newGitHubStats(username string, token string, displayName string) *gitHubStats {
@@ -42,7 +42,7 @@ func (g *gitHubStats) getAssignedIssues() error {
 		return err
 	}
 
-	g.CountOfIssues = len(issues)
+	g.IssueCount = len(issues)
 
 	return nil
 }
@@ -57,5 +57,5 @@ func (g *gitHubStats) process() error {
 }
 
 func (g *gitHubStats) getFormatedOutput() string {
-	return fmt.Sprintf("%s: I:%d ", g.displayName, g.CountOfIssues)
+	return fmt.Sprintf("%s: I:%d ", g.displayName, g.IssueCount)
 }

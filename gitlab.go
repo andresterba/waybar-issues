@@ -8,12 +8,12 @@ import (
 )
 
 type gitLabStats struct {
-	authToken            string
-	authUsername         string
-	CountOfIssues        int
-	CountOfMergeRequests int
-	displayName          string
-	instanceURL          string
+	authToken         string
+	authUsername      string
+	IssueCount        int
+	MergeRequestCount int
+	displayName       string
+	instanceURL       string
 }
 
 func newGitLabStats(username string, token string, instanceURL string, displayName string) *gitLabStats {
@@ -49,7 +49,7 @@ func (g *gitLabStats) gitlabGetAssignedIssues() error {
 		return err
 	}
 
-	g.CountOfIssues = len(issues)
+	g.IssueCount = len(issues)
 
 	return nil
 }
@@ -74,7 +74,7 @@ func (g *gitLabStats) gitlabGetAssignedMergeRequests() error {
 		return err
 	}
 
-	g.CountOfMergeRequests = len(mergeRequests)
+	g.MergeRequestCount = len(mergeRequests)
 
 	return nil
 }
@@ -94,5 +94,5 @@ func (g *gitLabStats) process() error {
 }
 
 func (g *gitLabStats) getFormatedOutput() string {
-	return fmt.Sprintf("%s: I:%d MR:%d ", g.displayName, g.CountOfIssues, g.CountOfMergeRequests)
+	return fmt.Sprintf("%s: I:%d MR:%d ", g.displayName, g.IssueCount, g.MergeRequestCount)
 }
