@@ -1,6 +1,6 @@
 # waybar-issues
 
-Get your open issues into waybar.
+Get your open issues and merge requests into waybar.
 
 ## Api tokens
 
@@ -29,7 +29,7 @@ Add a custom module to your waybar config eg.
 
 ## Build
 
-Create and save a configuration file in your `$HOME` (check `config.examle`).
+Create and save a configuration file in your `$HOME` (check `config.example`).
 
 * Build with `make`.
 * Save the binary in your `waybar/modules` folder.
