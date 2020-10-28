@@ -1,4 +1,4 @@
-package main
+package provider
 
 import (
 	"encoding/json"
@@ -10,13 +10,13 @@ import (
 type gitLabStats struct {
 	authToken         string
 	authUsername      string
-	IssueCount        int
-	MergeRequestCount int
+	issueCount        int
+	mergeRequestCount int
 	displayName       string
 	instanceURL       string
 }
 
-func newGitLabStats(username string, token string, instanceURL string, displayName string) *gitLabStats {
+func NewGitLabStats(username string, token string, instanceURL string, displayName string) *gitLabStats {
 	newGitLabStats := &gitLabStats{
 		token,
 		username,
@@ -29,7 +29,7 @@ func newGitLabStats(username string, token string, instanceURL string, displayNa
 	return newGitLabStats
 }
 
-func (g *gitLabStats) gitlabGetAssignedIssues() error {
+func (g *gitLabStats) getAssignedIssues() error {
 	issuesURL := fmt.Sprintf(
 		"%s/api/v4/issues?state=opened&scope=assigned_to_me&assignee_username=%s",
 		g.instanceURL,
@@ -49,12 +49,12 @@ func (g *gitLabStats) gitlabGetAssignedIssues() error {
 		return err
 	}
 
-	g.IssueCount = len(issues)
+	g.issueCount = len(issues)
 
 	return nil
 }
 
-func (g *gitLabStats) gitlabGetAssignedMergeRequests() error {
+func (g *gitLabStats) getAssignedMergeRequests() error {
 	mergeRequestURL := fmt.Sprintf(
 		"%s/api/v4/merge_requests?state=opened&scope=assigned_to_me&assignee_username=%s",
 		g.instanceURL,
@@ -74,18 +74,18 @@ func (g *gitLabStats) gitlabGetAssignedMergeRequests() error {
 		return err
 	}
 
-	g.MergeRequestCount = len(mergeRequests)
+	g.mergeRequestCount = len(mergeRequests)
 
 	return nil
 }
 
-func (g *gitLabStats) process() error {
-	err := g.gitlabGetAssignedIssues()
+func (g *gitLabStats) Process() error {
+	err := g.getAssignedIssues()
 	if err != nil {
 		return err
 	}
 
-	err = g.gitlabGetAssignedMergeRequests()
+	err = g.getAssignedMergeRequests()
 	if err != nil {
 		return err
 	}
@@ -93,6 +93,6 @@ func (g *gitLabStats) process() error {
 	return nil
 }
 
-func (g *gitLabStats) getFormatedOutput() string {
-	return fmt.Sprintf("%s: I:%d MR:%d ", g.displayName, g.IssueCount, g.MergeRequestCount)
+func (g *gitLabStats) GetFormatedOutput() string {
+	return fmt.Sprintf("%s: I:%d MR:%d ", g.displayName, g.issueCount, g.mergeRequestCount)
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/andresterba/waybar-issues/config"
+	provider "github.com/andresterba/waybar-issues/provider"
 )
 
 type waybarResponse struct {
@@ -27,25 +28,24 @@ func main() {
 	err := config.LoadConfigFile(config.GetConfigPath(), &configuration)
 	checkError(err)
 
-	var gitLabInstances []*gitLabStats
-	var gitHubInstances []*gitHubStats
+	var providers []provider.Provider
 
 	for _, configEntry := range configuration.Entries {
 		switch configEntry.Typ {
 		case "gitlab":
 
-			gitLabStatus := newGitLabStats(configEntry.Username, configEntry.Token, configEntry.URL, configEntry.DisplayName)
-			err := gitLabStatus.process()
+			gitLabStatus := provider.NewGitLabStats(configEntry.Username, configEntry.Token, configEntry.URL, configEntry.DisplayName)
+			err := gitLabStatus.Process()
 			checkError(err)
 
-			gitLabInstances = append(gitLabInstances, gitLabStatus)
+			providers = append(providers, gitLabStatus)
 
 		case "github":
-			gitHubStatus := newGitHubStats(configEntry.Username, configEntry.Token, configEntry.DisplayName)
-			err := gitHubStatus.process()
+			gitHubStatus := provider.NewGitHubStats(configEntry.Username, configEntry.Token, configEntry.DisplayName)
+			err := gitHubStatus.Process()
 			checkError(err)
 
-			gitHubInstances = append(gitHubInstances, gitHubStatus)
+			providers = append(providers, gitHubStatus)
 
 		default:
 			log.Fatal(fmt.Errorf("%s is not supported", configEntry.Typ))
@@ -54,12 +54,8 @@ func main() {
 
 	var responseText string
 
-	for _, gitLabInstance := range gitLabInstances {
-		responseText += gitLabInstance.getFormatedOutput()
-	}
-
-	for _, gitHubInstance := range gitHubInstances {
-		responseText += gitHubInstance.getFormatedOutput()
+	for _, provider := range providers {
+		responseText += provider.GetFormatedOutput()
 	}
 
 	waybarResponse := waybarResponse{Text: responseText, Class: "issues"}
