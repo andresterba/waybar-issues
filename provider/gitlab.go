@@ -18,12 +18,12 @@ type gitLabStats struct {
 
 func NewGitLabStats(username string, token string, instanceURL string, displayName string) *gitLabStats {
 	newGitLabStats := &gitLabStats{
-		token,
-		username,
-		0,
-		0,
-		displayName,
-		instanceURL,
+		authToken:         token,
+		authUsername:      username,
+		issueCount:        0,
+		mergeRequestCount: 0,
+		displayName:       displayName,
+		instanceURL:       instanceURL,
 	}
 
 	return newGitLabStats

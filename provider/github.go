@@ -27,17 +27,14 @@ type issue struct {
 	Title       *string     `json:"title,omitempty"`
 	PullRequest pullRequest `json:"pull_request,omitempty"`
 }
-type gitHubIssueResponse struct {
-	issues []issue `json:""`
-}
 
 func NewGitHubStats(username string, token string, displayName string) *gitHubStats {
 	newGitHubStats := &gitHubStats{
-		token,
-		username,
-		0,
-		0,
-		displayName,
+		authToken:        token,
+		authUsername:     username,
+		issueCount:       0,
+		pullRequestCount: 0,
+		displayName:      displayName,
 	}
 
 	return newGitHubStats
@@ -46,7 +43,11 @@ func NewGitHubStats(username string, token string, displayName string) *gitHubSt
 func (g *gitHubStats) getAssignedIssuesAndPullRequests() error {
 	var issueCounter = 0
 	var pullRequestCounter = 0
-	var gitHubResponse = new(gitHubIssueResponse)
+	var gitHubResponse = new([]issue)
+
+	// Needed to be able to mock http for testing.
+	// https://github.com/jarcoal/httpmock/issues/17
+	gorequest.DisableTransportSwap = true
 
 	request := gorequest.New()
 	_, body, errs := request.Get(issueURL).
@@ -56,8 +57,7 @@ func (g *gitHubStats) getAssignedIssuesAndPullRequests() error {
 		return fmt.Errorf("request to %s failed", issueURL)
 	}
 
-	if err := json.Unmarshal([]byte(body), &gitHubResponse.issues); err != nil {
-		fmt.Println(err)
+	if err := json.Unmarshal([]byte(body), &gitHubResponse); err != nil {
 		return err
 	}
 
@@ -66,7 +66,7 @@ func (g *gitHubStats) getAssignedIssuesAndPullRequests() error {
 	// You can identify pull requests by the pull_request key.
 	//
 	// https://docs.github.com/en/free-pro-team@latest/rest/reference/issues#list-issues-assigned-to-the-authenticated-user
-	for _, issue := range gitHubResponse.issues {
+	for _, issue := range *gitHubResponse {
 		if len(issue.PullRequest.URL) != 0 {
 			pullRequestCounter++
 		} else {
