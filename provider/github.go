@@ -2,12 +2,18 @@ package provider
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/parnurzeal/gorequest"
 )
 
 const issueURL = "https://api.github.com/issues"
+
+var (
+	errAuthenticationFailed = errors.New("authentication failed")
+)
 
 // All of the structs to are used to handle api responses from GitHub are based on
 // https://github.com/google/go-github/blob/76c3c3d7c6e78e8c91e77d2e2578c4e0a7cf96ea/github/issues.go#L27
@@ -50,12 +56,18 @@ func (g *gitHubStats) getAssignedIssuesAndPullRequests() error {
 	gorequest.DisableTransportSwap = true
 
 	request := gorequest.New()
-	_, body, errs := request.Get(issueURL).
+	response, body, errs := request.Get(issueURL).
 		AppendHeader("Authorization", g.authToken).
 		End()
 	if errs != nil {
 		return fmt.Errorf("request to %s failed", issueURL)
 	}
+
+	if response.StatusCode != http.StatusOK {
+		return errAuthenticationFailed
+	}
+
+	fmt.Println(response.StatusCode)
 
 	if err := json.Unmarshal([]byte(body), &gitHubResponse); err != nil {
 		return err

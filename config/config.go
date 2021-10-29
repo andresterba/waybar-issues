@@ -2,9 +2,15 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"os"
 	"os/user"
+)
+
+var (
+	errCouldNotOpenConfigFile  = errors.New("could not open configuration file")
+	errCouldNotParseConfigFile = errors.New("could not parse configuration file")
 )
 
 type Configuration struct {
@@ -30,14 +36,14 @@ func GetConfigPath() string {
 func LoadConfigFile(filename string, config *Configuration) error {
 	file, err := os.Open(filename)
 	if err != nil {
-		return err
+		return errCouldNotOpenConfigFile
 	}
 
 	jsonDecoder := json.NewDecoder(file)
 
 	err = jsonDecoder.Decode(&config)
 	if err != nil {
-		return err
+		return errCouldNotParseConfigFile
 	}
 
 	return nil

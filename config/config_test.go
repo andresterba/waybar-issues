@@ -46,3 +46,21 @@ func TestConfigLoader(t *testing.T) {
 		t.Errorf("LoadConfigFile() = %s; want GitHub", configuration.Entries[1].DisplayName)
 	}
 }
+
+func TestConfigOpenError(t *testing.T) {
+	configuration := Configuration{}
+
+	err := LoadConfigFile("./no-file.test", &configuration)
+	if err != errCouldNotOpenConfigFile {
+		t.Errorf("Expected 'could not open file error', got=%T", err)
+	}
+}
+
+func TestConfigParseError(t *testing.T) {
+	configuration := Configuration{}
+
+	err := LoadConfigFile("./invalid_config.test", &configuration)
+	if err != errCouldNotParseConfigFile {
+		t.Errorf("Expected 'could not parse error', got=%T", err)
+	}
+}
