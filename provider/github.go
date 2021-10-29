@@ -67,8 +67,6 @@ func (g *gitHubStats) getAssignedIssuesAndPullRequests() error {
 		return errAuthenticationFailed
 	}
 
-	fmt.Println(response.StatusCode)
-
 	if err := json.Unmarshal([]byte(body), &gitHubResponse); err != nil {
 		return err
 	}
