@@ -57,7 +57,7 @@ func (g *gitHubStats) getAssignedIssuesAndPullRequests() error {
 
 	request := gorequest.New()
 	response, body, errs := request.Get(issueURL).
-		AppendHeader("Authorization", g.authToken).
+		AppendHeader("Authorization", fmt.Sprintf("%s %s", "Bearer", g.authToken)).
 		End()
 	if errs != nil {
 		return fmt.Errorf("request to %s failed", issueURL)
