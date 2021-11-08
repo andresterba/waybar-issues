@@ -11,5 +11,11 @@
 		"token": "token-1337",
 		"url": "",
         "display_name": "GitHub"
+	}, {
+        "typ": "trello",
+		"username": "trello-user",
+		"token": "token-1337",
+		"url": "",
+        "display_name": "Trello"
 	}]
 }

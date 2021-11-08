@@ -12,8 +12,11 @@ func TestConfigLoader(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if len(configuration.Entries) != 2 {
+	if len(configuration.Entries) != 3 {
 		t.Errorf("Configuration entries size = %d; want 2", len(configuration.Entries))
+	}
+	if configuration.Entries[0].Typ != "gitlab" {
+		t.Errorf("LoadConfigFile() = %s; want gitlab", configuration.Entries[0].Typ)
 	}
 	if configuration.Entries[0].Typ != "gitlab" {
 		t.Errorf("LoadConfigFile() = %s; want gitlab", configuration.Entries[0].Typ)

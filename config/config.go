@@ -8,9 +8,12 @@ import (
 	"os/user"
 )
 
-var (
-	errCouldNotOpenConfigFile  = errors.New("could not open configuration file")
-	errCouldNotParseConfigFile = errors.New("could not parse configuration file")
+type Type string
+
+const (
+	GitHubConfigType Type = "github"
+	GitLabConfigType Type = "gitlab"
+	TrelloConfigType Type = "trello"
 )
 
 type Configuration struct {
@@ -18,12 +21,17 @@ type Configuration struct {
 }
 
 type ConfigurationEntry struct {
-	Typ         string `json:"typ"`
+	Typ         Type   `json:"typ"`
 	Username    string `json:"username"`
 	Token       string `json:"token"`
-	URL         string `json:"url"`
+	URL         string `json:"url, omitempty"`
 	DisplayName string `json:"display_name"`
 }
+
+var (
+	errCouldNotOpenConfigFile  = errors.New("could not open configuration file")
+	errCouldNotParseConfigFile = errors.New("could not parse configuration file")
+)
 
 func GetConfigPath() string {
 	usr, err := user.Current()
