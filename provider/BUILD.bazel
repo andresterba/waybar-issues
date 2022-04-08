@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "provider",
+    srcs = [
+        "github.go",
+        "gitlab.go",
+        "types.go",
+    ],
+    importpath = "github.com/andresterba/waybar-issues/provider",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_parnurzeal_gorequest//:go_default_library"],
+)
+
+go_test(
+    name = "provider_test",
+    srcs = [
+        "github_test.go",
+        "gitlab_test.go",
+    ],
+    embed = [":provider"],
+    deps = ["@com_github_jarcoal_httpmock//:go_default_library"],
+)
