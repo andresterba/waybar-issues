@@ -7,10 +7,10 @@ BINARY_NAME=waybar-issues
 
 all: build
 run: build
-	./$(BINARY_NAME)
+	./bazel-bin/waybar-issues_/waybar-issues
 build: 
-	$(GOBUILD) -o $(BINARY_NAME)
+	bazel build //... 
 format:
 	$(GOFORMAT) ./...
 test:
-	$(GOTEST) ./... -cover
+	bazel test //... --test_output=errors
