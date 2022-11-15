@@ -3,7 +3,7 @@ module github.com/andresterba/waybar-issues
 go 1.18
 
 require (
-	github.com/jarcoal/httpmock v1.1.0
+	github.com/jarcoal/httpmock v1.2.0
 	github.com/parnurzeal/gorequest v0.2.16
 )
 
