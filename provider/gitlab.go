@@ -38,7 +38,7 @@ func (g *gitLabStats) getAssignedIssues() error {
 
 	request := gorequest.New()
 	_, body, errs := request.Get(issuesURL).
-		AppendHeader("Private-Token", g.authToken).
+		Set("Private-Token", g.authToken).
 		End()
 	if errs != nil {
 		return fmt.Errorf("request to %s failed", issuesURL)
@@ -63,7 +63,7 @@ func (g *gitLabStats) getAssignedMergeRequests() error {
 
 	request := gorequest.New()
 	_, body, errs := request.Get(mergeRequestURL).
-		AppendHeader("Private-Token", g.authToken).
+		Set("Private-Token", g.authToken).
 		End()
 	if errs != nil {
 		return fmt.Errorf("request to %s failed", mergeRequestURL)
