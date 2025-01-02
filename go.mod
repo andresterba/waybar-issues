@@ -1,6 +1,6 @@
 module github.com/andresterba/waybar-issues
 
-go 1.21
+go 1.23
 
 require (
 	github.com/jarcoal/httpmock v1.3.1
