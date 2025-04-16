@@ -1,6 +1,7 @@
 module github.com/andresterba/waybar-issues
 
 go 1.23
+toolchain go1.24.1
 
 require (
 	github.com/jarcoal/httpmock v1.3.1
@@ -12,6 +13,5 @@ require (
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	golang.org/x/net v0.33.0 // indirect
-	moul.io/http2curl v1.0.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 )
